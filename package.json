@@ -1,0 +1,35 @@
+{
+  "name": "web-client-modernized",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Modernized Vue 3 web client for the security operations platform.",
+  "scripts": {
+    "dev": "vite --port 3003 --host 0.0.0.0",
+    "build": "vue-tsc -p tsconfig.app.json --noEmit && vite build",
+    "preview": "vite preview --port 3003 --host 0.0.0.0",
+    "typecheck": "vue-tsc -p tsconfig.app.json --noEmit",
+    "lint": "eslint . --ext .ts,.tsx,.vue --max-warnings 0",
+    "format": "prettier . --write"
+  },
+  "dependencies": {
+    "axios": "^1.6.8",
+    "pinia": "^2.1.7",
+    "vue": "^3.4.21",
+    "vue-router": "^4.3.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.2.0",
+    "@types/node": "^20.11.30",
+    "@vitejs/plugin-vue": "^5.0.4",
+    "@vue/eslint-config-prettier": "^10.1.0",
+    "@vue/eslint-config-typescript": "^14.2.0",
+    "@vue/tsconfig": "^0.5.1",
+    "eslint": "^9.2.0",
+    "eslint-plugin-vue": "^9.24.1",
+    "prettier": "^3.2.5",
+    "typescript": "^5.4.5",
+    "vite": "^5.2.10",
+    "vue-tsc": "^2.0.11"
+  }
+}
