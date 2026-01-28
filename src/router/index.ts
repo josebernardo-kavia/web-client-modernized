@@ -6,6 +6,9 @@ import HomeView from '@/views/HomeView.vue'
 import ProjectsView from '@/views/ProjectsView.vue'
 import TasksView from '@/views/TasksView.vue'
 import VulnerabilitiesView from '@/views/VulnerabilitiesView.vue'
+import ProjectDetailView from '@/views/ProjectDetailView.vue'
+import TaskDetailView from '@/views/TaskDetailView.vue'
+import VulnerabilityDetailView from '@/views/VulnerabilityDetailView.vue'
 import LoginView from '@/views/LoginView.vue'
 import OidcCallbackView from '@/views/OidcCallbackView.vue'
 
@@ -27,9 +30,15 @@ const routes: RouteRecordRaw[] = [
     component: AppLayout,
     children: [
       { path: '', name: 'home', component: HomeView },
+
       { path: 'projects', name: 'projects', component: ProjectsView },
+      { path: 'projects/:id', name: 'project-detail', component: ProjectDetailView },
+
       { path: 'tasks', name: 'tasks', component: TasksView },
-      { path: 'vulnerabilities', name: 'vulnerabilities', component: VulnerabilitiesView }
+      { path: 'tasks/:id', name: 'task-detail', component: TaskDetailView },
+
+      { path: 'vulnerabilities', name: 'vulnerabilities', component: VulnerabilitiesView },
+      { path: 'vulnerabilities/:id', name: 'vulnerability-detail', component: VulnerabilityDetailView }
     ]
   }
 ]
