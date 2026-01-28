@@ -3,33 +3,75 @@
     <div class="panel card">
       <h1 class="page-title">Login</h1>
       <p class="muted">
-        Placeholder login. For now, click “Set demo token” to pass the route guard.
+        Sign in with your organization account (Keycloak/OIDC). You will be redirected to the identity
+        provider.
       </p>
 
       <div class="row">
-        <button class="primary" type="button" @click="setDemoToken">Set demo token</button>
-        <button class="btn" type="button" @click="clearToken">Clear</button>
+        <button class="primary" type="button" @click="startLogin" :disabled="busy">
+          {{ busy ? 'Redirecting…' : 'Login' }}
+        </button>
+        <button class="btn" type="button" @click="clearSession" :disabled="busy">Clear session</button>
       </div>
+
+      <p v-if="error" class="error" role="alert">{{ error }}</p>
+
+      <details class="details">
+        <summary class="muted">Troubleshooting</summary>
+        <div class="muted small">
+          <p>
+            Ensure the following are set in your environment:
+            <code>VITE_OIDC_ISSUER</code>, <code>VITE_OIDC_CLIENT_ID</code>,
+            <code>VITE_OIDC_REDIRECT_URI</code>, <code>VITE_OIDC_SCOPE</code>.
+          </p>
+        </div>
+      </details>
     </div>
   </section>
 </template>
 
 <script setup lang="ts">
-import { useRoute, useRouter } from 'vue-router'
+import { ref } from 'vue'
+import { useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { authService } from '@/services/authService'
+import { getSessionPreferredStorage } from '@/services/tokenStorage'
+
+const CODE_VERIFIER_KEY = 'oidc.code_verifier'
+const STATE_KEY = 'oidc.state'
+const REDIRECT_KEY = 'oidc.post_login_redirect'
+
+const busy = ref(false)
+const error = ref<string | null>(null)
 
 const auth = useAuthStore()
-const router = useRouter()
 const route = useRoute()
+const storage = getSessionPreferredStorage()
 
-function setDemoToken() {
-  auth.setToken('demo-token')
-  const redirect = typeof route.query.redirect === 'string' ? route.query.redirect : '/'
-  router.replace(redirect)
+async function startLogin() {
+  try {
+    error.value = null
+    busy.value = true
+
+    const redirect = typeof route.query.redirect === 'string' ? route.query.redirect : '/'
+    storage.setItem(REDIRECT_KEY, redirect)
+
+    const { authorizeUrl, codeVerifier, state } = await authService.buildLoginUrl()
+    storage.setItem(CODE_VERIFIER_KEY, codeVerifier)
+    storage.setItem(STATE_KEY, state)
+
+    window.location.assign(authorizeUrl)
+  } catch (e: any) {
+    error.value = e?.message ? String(e.message) : 'Unable to start login.'
+    busy.value = false
+  }
 }
 
-function clearToken() {
-  auth.setToken(null)
+function clearSession() {
+  auth.clearTokens()
+  storage.removeItem(CODE_VERIFIER_KEY)
+  storage.removeItem(STATE_KEY)
+  storage.removeItem(REDIRECT_KEY)
 }
 </script>
 
@@ -43,7 +85,7 @@ function clearToken() {
 }
 
 .panel {
-  max-width: 520px;
+  max-width: 560px;
   width: 100%;
 }
 
@@ -68,5 +110,18 @@ function clearToken() {
   padding: 9px 12px;
   border-radius: 8px;
   cursor: pointer;
+}
+
+.details {
+  margin-top: 12px;
+}
+
+.small {
+  font-size: 12px;
+}
+
+.error {
+  margin-top: 12px;
+  color: #b42318;
 }
 </style>

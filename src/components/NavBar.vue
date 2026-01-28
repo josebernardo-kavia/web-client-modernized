@@ -11,6 +11,11 @@
         <strong>{{ apiBaseLabel }}</strong>
       </span>
 
+      <div class="user" v-if="auth.isAuthenticated">
+        <span class="muted small">Signed in as</span>
+        <strong class="name">{{ auth.username ?? 'user' }}</strong>
+      </div>
+
       <button class="btn" type="button" @click="onLogout" :disabled="!auth.isAuthenticated">
         Logout
       </button>
@@ -71,6 +76,24 @@ function onLogout() {
 }
 
 .api {
+  font-size: 12px;
+}
+
+.user {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  padding: 4px 8px;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  background: var(--color-surface);
+}
+
+.small {
+  font-size: 12px;
+}
+
+.name {
   font-size: 12px;
 }
 

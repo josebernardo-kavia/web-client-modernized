@@ -7,12 +7,19 @@ import ProjectsView from '@/views/ProjectsView.vue'
 import TasksView from '@/views/TasksView.vue'
 import VulnerabilitiesView from '@/views/VulnerabilitiesView.vue'
 import LoginView from '@/views/LoginView.vue'
+import OidcCallbackView from '@/views/OidcCallbackView.vue'
 
 const routes: RouteRecordRaw[] = [
   {
     path: '/login',
     name: 'login',
     component: LoginView,
+    meta: { public: true }
+  },
+  {
+    path: '/oidc/callback',
+    name: 'oidc-callback',
+    component: OidcCallbackView,
     meta: { public: true }
   },
   {
@@ -29,7 +36,7 @@ const routes: RouteRecordRaw[] = [
 
 // PUBLIC_INTERFACE
 export const router = createRouter({
-  /** Application router (history mode). Includes a placeholder auth guard for protected routes. */
+  /** Application router (history mode). Protected routes require authentication. */
   history: createWebHistory(),
   routes
 })
@@ -38,11 +45,10 @@ router.beforeEach((to) => {
   // Public routes bypass auth check.
   if (to.meta.public) return true
 
-  // Placeholder protection: if not authenticated, redirect to login.
-  // Later this will be expanded to validate bearer tokens, refresh, and role-based access.
   const auth = useAuthStore()
   if (!auth.isAuthenticated) {
     return { name: 'login', query: { redirect: to.fullPath } }
   }
+
   return true
 })
